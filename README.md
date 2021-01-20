@@ -74,8 +74,12 @@ Class Sql:
     def get_operation_price_by_id(self,id)
     def get_operation_bonuses_by_id(self,id)
     def get_operation_money_to_user_telegram_id_by_id(self,id)
-    def get_operation_bonuses_to_user_telegram_id_by_id(self,id)
-    def print_result(self)
+    def get_operation_bonuses_to_user_telegram_id_by_id(self,id) 
+    def print_result(self) -> void
+    def save_new_user(17623373393,"test_refer3","refer3",123,2) -> self
+    def user_id_exists(5))
+    def user_telegram_id_exists(1923891386)
+    
 ```
 
 Examlpe 1 :
@@ -144,3 +148,10 @@ Some bool (True in my case)
 Some bool (False in my case)
 Some bool (False in my case)
 ```
+
+Example 3
+```
+sql.save_new_user(17623373393,"test_refer3","refer3",123,2).commit()
+```
+
+

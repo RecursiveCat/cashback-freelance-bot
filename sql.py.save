@@ -13,18 +13,18 @@ OPERATIONS_SCHEME = [
 ]
 
 USERS_SCHEME = [
-             "id",
-             "telegram_id",
-             "name",
-             "type",
-             "all_bonuses",
-             "percent_from_price",
+             "id"
+             "telegram_id"
+             "name"
+             "type"
+             "all_bonuses"
+             "percent_from_price"
 ]
 
 REFERS_SHEME = [
-             "id",
-             "refer_telegram_id",
-             "customer_telegram_id",
+             "id"
+             "refer_telegram_id"
+             "customer_telegram_id"
 ]
 
 class Sql:
@@ -95,34 +95,42 @@ class Sql:
         for row in self.data_base_cursor:
             print(row)
 
-    def bool_checker(self,data):
-        count_of_rows = len(list(data))
-        if count_of_rows >= 1:
-            return True
-        else:
-            return False
 
     def user_id_exists(self,id):
         self.select("*","users",f"WHERE id={id}")
-        return self.bool_checker(self.data_base_cursor)
+        count_of_ids = (len(list(self.data_base_cursor)))
+        if counf
 
-    def user_telegram_id_exists(self,telegram_id):
-        self.select("*","users",f"WHERE telegram_id={telegram_id}")
-        return self.bool_checker(self.data_base_cursor)
-
-    def save_new_user(self,*argv):
-        if len(USERS_SCHEME)-1 != len(argv):
-            print(f"Error: credentials ->{argv} are invalid,"+"""waiting {} getting {}""".format(
-              len(USERS_SCHEME)-1,len(argv)
-            ))
-        elif not self.user_telegram_id_exists(argv[0]):
-            query = """
-            INSERT INTO users(telegram_id,name,type,all_bonuses,percent_from_price)
-              VALUES({},"{}","{}",{},{});
-            """.format(argv[0],argv[1],argv[2],argv[3],argv[4])
-            sql.run(query)
-        else:
-            print(f"Warning: user with {argv[0]} id already exists")
-        return self
+    def user_telegram_id_exists(self,id):
 
 
+"""
+sql = Sql()
+sql.run("SHOW TABLES")
+sql.print_result()
+sql.select("*","users")
+sql.print_result()
+sql.get_user_type_by_id(1)
+sql.print_result()
+sql.get_user_all_bonuses_by_id(1)
+sql.print_result()
+sql.get_user_percent_from_price_by_id(1)
+sql.print_result()
+sql.get_user_name_by_id(1)
+sql.print_result()
+sql.get_user_tg_id_by_id(1)
+sql.print_result()
+sql.get_referal_id_by_id(1)
+sql.print_result()
+sql.get_operation_price_by_id(1)
+sql.print_result()
+sql.get_operation_bonuses_by_id(1)
+sql.print_result()
+sql.get_operation_money_to_user_telegram_id_by_id(1)
+sql.print_result()
+sql.get_operation_bonuses_to_user_telegram_id_by_id(1)
+sql.print_result()
+"""
+
+sql = Sql()
+print(sql.user_id_exists(1))
