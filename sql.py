@@ -125,4 +125,12 @@ class Sql:
             print(f"Warning: user with {argv[0]} id already exists")
         return self
 
+    def delete_user_by_telegram_id(self,telegram_id):
+        if not self.user_telegram_id_exists(argv[0]):
+            print("No such user telegram id in Data Base")
+        self.run(f"DELETE FROM users WHERE telegram_id={telegram_id};")
+        return self
+
+sql = Sql()
+sql.delete_user_by_telegram_id(17623373393).commit()
 
