@@ -29,14 +29,21 @@ class Sql:
         sql.select("type","users",f"WHERE id={id}")
         return self.data_base_cursor
 
-    def get_user_bonuses_by_id(self,id):
-        sql.select("bonuses","users",f"WHERE id={id}")
+    def get_user_all_bonuses_by_id(self,id):
+        sql.select("all_bonuses","users",f"WHERE id={id}")
         return self.data_base_cursor
 
-    def get_user_percents_by_id(self,id):
-        sql.select("percents","users",f"WHERE id={id}")
+    def get_user_percent_from_price_by_id(self,id):
+        sql.select("percent_from_price","users",f"WHERE id={id}")
         return self.data_base_cursor
 
+    def get_user_name_by_id(self,id):
+        sql.select("name","users",f"WHERE id={id}")
+        return self.data_base_cursor
+
+    def get_user_tg_id_by_id(self,id):
+        sql.select("telegram_id","users",f"WHERE id={id}")
+        return self.data_base_cursor
 
 
 
@@ -48,6 +55,23 @@ class Sql:
 """
 
 sql = Sql()
+"""
+sql.run(INSERT INTO users(telegram_id,name,type,all_bonuses,percent_from_price)
+           VALUES (1923891389,"zhaba","customer",5,1);)
+"""
 
 for row in sql.get_user_type_by_id(1):
     print(row)
+
+for row in sql.get_user_tg_id_by_id(1):
+    print(row)
+
+for row in sql.get_user_name_by_id(1):
+    print(row)
+
+for row in sql.get_user_percent_from_price_by_id(1):
+    print(row)
+
+for row in sql.get_user_all_bonuses_by_id(1):
+    print(row)
+
