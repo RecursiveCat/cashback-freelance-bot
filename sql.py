@@ -1,6 +1,31 @@
 import config
 import mysql.connector
 
+OPERATIONS_SCHEME = [
+             "price_from_user_telegram_id",
+             "price_to_user_telegram_id",
+             "bonuses_to_user_telegram_id",
+             "bonuses_count",
+             "only_bonuses",
+             "percent_from_price",
+             "price",
+]
+
+USERS_SCHEME = [
+             "id"
+             "telegram_id"
+             "name"
+             "type"
+             "all_bonuses"
+             "percent_from_price"
+]
+
+REFERS_SHEME = [
+             "id"
+             "refer_telegram_id"
+             "customer_telegram_id"
+]
+
 class Sql:
 
     def __init__(self):
@@ -17,7 +42,7 @@ class Sql:
         self.last_query = query
         return self.data_base_cursor
 
-    def select(self,data,table,condition):
+    def select(self,data,table,condition=None):
         self.run(f"SELECT {data} FROM {table} {condition}")
         return self.data_base_cursor
 
@@ -45,33 +70,55 @@ class Sql:
         sql.select("telegram_id","users",f"WHERE id={id}")
         return self.data_base_cursor
 
+    def get_referal_id_by_id(self,id):
+        sql.select("refer_telegram_id","refers",f"WHERE id={id}")
+        return self.data_base_cursor
+
+    def get_operation_price_by_id(self,id):
+        sql.select("price","operations")
+        return self.data_base_cursor
+
+    def get_operation_bonuses_by_id(self,id):
+        sql.select("bonuses_count","operations",f"WHERE id={id}")
+        return self.data_base_cursor
+
+    def get_operation_money_to_user_telegram_id_by_id(self,id):
+        sql.select("price_to_user_telegram_id","operations",f"WHERE id={id}")
+        return self.data_base_cursor
+
+    def get_operation_bonuses_to_user_telegram_id_by_id(self,id):
+        sql.select("bonuses_to_user_telegram_id","operations",f"WHERE id={id}")
+        return self.data_base_cursor
+
+    def print_result(self):
+        for row in self.data_base_cursor:
+            print(row)
 
 
 """
-функция получения реферов
--
-функция получения суммы операции
-функция получения бонусов (из операции)
-"""
-
 sql = Sql()
+sql.run("SHOW TABLES")
+sql.print_result()
+sql.select("*","users")
+sql.print_result()
+sql.get_user_type_by_id(1)
+sql.print_result()
+sql.get_user_all_bonuses_by_id(1)
+sql.print_result()
+sql.get_user_percent_from_price_by_id(1)
+sql.print_result()
+sql.get_user_name_by_id(1)
+sql.print_result()
+sql.get_user_tg_id_by_id(1)
+sql.print_result()
+sql.get_referal_id_by_id(1)
+sql.print_result()
+sql.get_operation_price_by_id(1)
+sql.print_result()
+sql.get_operation_bonuses_by_id(1)
+sql.print_result()
+sql.get_operation_money_to_user_telegram_id_by_id(1)
+sql.print_result()
+sql.get_operation_bonuses_to_user_telegram_id_by_id(1)
+sql.print_result()
 """
-sql.run(INSERT INTO users(telegram_id,name,type,all_bonuses,percent_from_price)
-           VALUES (1923891389,"zhaba","customer",5,1);)
-"""
-
-for row in sql.get_user_type_by_id(1):
-    print(row)
-
-for row in sql.get_user_tg_id_by_id(1):
-    print(row)
-
-for row in sql.get_user_name_by_id(1):
-    print(row)
-
-for row in sql.get_user_percent_from_price_by_id(1):
-    print(row)
-
-for row in sql.get_user_all_bonuses_by_id(1):
-    print(row)
-

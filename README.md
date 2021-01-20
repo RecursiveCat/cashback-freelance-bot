@@ -55,3 +55,73 @@
 
 Главная задача кота: обвернуть в телеграм бота, прописать кнопки и базовые функции
 
+Class Sql:
+
+
+    var data_base_connection
+    var data_base_cursor
+    var last_query
+
+    def __init__(self)
+    def run(self,query)
+    def select(self,data,table,condition=None)
+    def commit(self)
+    def get_user_type_by_id(self,id)
+    def get_user_all_bonuses_by_id(self,id)
+    def get_user_percent_from_price_by_id(self,id)
+    def get_user_name_by_id(self,id)
+    def get_user_tg_id_by_id(self,id)
+    def get_referal_id_by_id(self,id)
+    def get_operation_price_by_id(self,id)
+    def get_operation_bonuses_by_id(self,id)
+    def get_operation_money_to_user_telegram_id_by_id(self,id)
+    def get_operation_bonuses_to_user_telegram_id_by_id(self,id)
+    def print_result(self):
+
+
+Examlpe:
+
+sql = Sql()
+sql.run("SHOW TABLES")
+sql.print_result()
+sql.select("*","users")
+sql.print_result()
+sql.get_user_type_by_id(1)
+sql.print_result()
+sql.get_user_all_bonuses_by_id(1)
+sql.print_result()
+sql.get_user_percent_from_price_by_id(1)
+sql.print_result()
+sql.get_user_name_by_id1)
+sql.print_result()
+sql.get_user_tg_id_by_id(1)
+sql.print_result()
+sql.get_referal_id_by_id(1)
+sql.print_result()
+sql.get_operation_price_by_id(1)
+sql.print_result()
+sql.get_operation_bonuses_by_id(1)
+sql.print_result()
+sql.get_operation_money_to_user_telegram_id_by_id(1)
+sql.print_result()
+sql.get_operation_bonuses_to_user_telegram_id_by_id(1)
+sql.print_result()
+
+Result:
+('operations',)
+('refers',)
+('users',)
+(1, 1923891389, 'zhaba', 'customer', 5, 1)
+(2, 1923891389, 'zhaba', 'customer', 5, 1)
+(3, 1923891389, 'zhaba', 'customer', 5, 1)
+(8, 8394321923, 'recuirsive_cat', 'customer', 2, 1)
+('customer',)
+(5,)
+(1,)
+('zhaba',)
+(1923891389,)
+(1923891389,)
+(500,)
+(5,)
+(1923891389,)
+(8394321923,)
