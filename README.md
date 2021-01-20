@@ -78,7 +78,7 @@ Class Sql:
     def print_result(self)
 ```
 
-Examlpe:
+Examlpe 1 :
 
 ```
 sql = Sql()
@@ -128,4 +128,19 @@ Result:
 (5,)
 (1923891389,)
 (8394321923,)
+```
+
+Example 2:
+```
+print(sql.user_id_exists(1))
+print(sql.user_telegram_id_exists(1923891389))
+print(sql.user_id_exists(5))
+print(sql.user_telegram_id_exists(1923891386))
+```
+Result:
+```
+Some bool (True in my case)
+Some bool (True in my case)
+Some bool (False in my case)
+Some bool (False in my case)
 ```

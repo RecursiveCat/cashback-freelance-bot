@@ -1,6 +1,7 @@
 import config
 import mysql.connector
 
+
 OPERATIONS_SCHEME = [
              "price_from_user_telegram_id",
              "price_to_user_telegram_id",
@@ -94,31 +95,21 @@ class Sql:
         for row in self.data_base_cursor:
             print(row)
 
+    def bool_checker(self,data):
+        count_of_rows = len(list(data))
+        if count_of_rows >= 1:
+            return True
+        else:
+            return False
 
-"""
-sql = Sql()
-sql.run("SHOW TABLES")
-sql.print_result()
-sql.select("*","users")
-sql.print_result()
-sql.get_user_type_by_id(1)
-sql.print_result()
-sql.get_user_all_bonuses_by_id(1)
-sql.print_result()
-sql.get_user_percent_from_price_by_id(1)
-sql.print_result()
-sql.get_user_name_by_id(1)
-sql.print_result()
-sql.get_user_tg_id_by_id(1)
-sql.print_result()
-sql.get_referal_id_by_id(1)
-sql.print_result()
-sql.get_operation_price_by_id(1)
-sql.print_result()
-sql.get_operation_bonuses_by_id(1)
-sql.print_result()
-sql.get_operation_money_to_user_telegram_id_by_id(1)
-sql.print_result()
-sql.get_operation_bonuses_to_user_telegram_id_by_id(1)
-sql.print_result()
-"""
+    def user_id_exists(self,id):
+        self.select("*","users",f"WHERE id={id}")
+        return self.bool_checker(self.data_base_cursor))))
+
+    def user_telegram_id_exists(self,telegram_id):
+        self.select("*","users",f"WHERE telegram_id={telegram_id}")
+        return self.bool_checker(self.data_base_cursor)
+
+
+
+
