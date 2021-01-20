@@ -54,9 +54,8 @@
 Главная задача жабы: прописать SQL класс, чтобы можно было взаимодействовать с MySQL, функции буду просить в процессе.
 
 Главная задача кота: обвернуть в телеграм бота, прописать кнопки и базовые функции
-
+```
 Class Sql:
-
 
     var data_base_connection
     var data_base_cursor
@@ -76,18 +75,20 @@ Class Sql:
     def get_operation_bonuses_by_id(self,id)
     def get_operation_money_to_user_telegram_id_by_id(self,id)
     def get_operation_bonuses_to_user_telegram_id_by_id(self,id)
-    def print_result(self):
-
+    def print_result(self)
+```
 
 Examlpe:
 
+```
 sql = Sql()
 sql.run("SHOW TABLES")
 sql.print_result()
 sql.select("*","users")
 sql.print_result()
 sql.get_user_type_by_id(1)
-sql.print_result()
+sql.print_result()def get_referal_id_by_id(self,id)
+
 sql.get_user_all_bonuses_by_id(1)
 sql.print_result()
 sql.get_user_percent_from_price_by_id(1)
@@ -106,8 +107,10 @@ sql.get_operation_money_to_user_telegram_id_by_id(1)
 sql.print_result()
 sql.get_operation_bonuses_to_user_telegram_id_by_id(1)
 sql.print_result()
+```
 
 Result:
+```
 ('operations',)
 ('refers',)
 ('users',)
@@ -125,3 +128,4 @@ Result:
 (5,)
 (1923891389,)
 (8394321923,)
+```
