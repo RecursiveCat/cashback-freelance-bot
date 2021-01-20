@@ -13,18 +13,18 @@ OPERATIONS_SCHEME = [
 ]
 
 USERS_SCHEME = [
-             "id"
-             "telegram_id"
-             "name"
-             "type"
-             "all_bonuses"
-             "percent_from_price"
+             "id",
+             "telegram_id",
+             "name",
+             "type",
+             "all_bonuses",
+             "percent_from_price",
 ]
 
 REFERS_SHEME = [
-             "id"
-             "refer_telegram_id"
-             "customer_telegram_id"
+             "id",
+             "refer_telegram_id",
+             "customer_telegram_id",
 ]
 
 class Sql:
