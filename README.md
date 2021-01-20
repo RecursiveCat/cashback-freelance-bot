@@ -151,7 +151,10 @@ Some bool (False in my case)
 
 Example 3
 ```
-sql.save_new_user(17623373393,"test_refer3","refer3",123,2).commit()
+sql = Sql()
+sql.make_new_user(63594,"some_referer","refer",7,7).commit()
+sql.make_new_user(17623,"some_customer","customer",6,2).commit()
+sql.make_new_referal(63594,17623).commit()
 ```
-
+This is makes referal link between refer and customers
 

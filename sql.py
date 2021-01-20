@@ -21,7 +21,7 @@ USERS_SCHEME = [
              "percent_from_price",
 ]
 
-REFERS_SHEME = [
+REFERS_SCHEME = [
              "id",
              "refer_telegram_id",
              "customer_telegram_id",
@@ -110,7 +110,7 @@ class Sql:
         self.select("*","users",f"WHERE telegram_id={telegram_id}")
         return self.bool_checker(self.data_base_cursor)
 
-    def save_new_user(self,*argv):
+    def make_new_user(self,*argv):
         if len(USERS_SCHEME)-1 != len(argv):
             print(f"Error: credentials ->{argv} are invalid,"+"""waiting {} getting {}""".format(
               len(USERS_SCHEME)-1,len(argv)
@@ -126,11 +126,34 @@ class Sql:
         return self
 
     def delete_user_by_telegram_id(self,telegram_id):
-        if not self.user_telegram_id_exists(argv[0]):
+        if not self.user_telegram_id_exists(telegram_id):
             print("No such user telegram id in Data Base")
         self.run(f"DELETE FROM users WHERE telegram_id={telegram_id};")
         return self
 
-sql = Sql()
-sql.delete_user_by_telegram_id(17623373393).commit()
+    def referal_telegram_id_exists(self,refer_telegram_id):
+        self.select("*","refers",f"WHERE refer_telegram_id={refer_telegram_id}")
+        return self.bool_checker(self.data_base_cursor)
+
+    def make_new_referal(self,*argv):
+        if len(REFERS_SCHEME)-1 != len(argv):
+            print(f"Error: refer credentials ->{argv} are invalid,"+"""waiting {} getting {}""".format(
+              len(REFERS_SCHEME)-1,len(argv)
+            ))
+        elif not self.referal_telegram_id_exists(argv[0]):
+            if self.user_telegram_id_exists(argv[0]):
+                query = """
+                INSERT INTO refers(refer_telegram_id,customer_telegram_id)
+                  VALUES({},{});
+                """.format(argv[0],argv[1])
+                sql.run(query)
+                print("ref")
+            else:
+                print("Warngin: You cannot make non-registered user a referal")
+        else:
+            print(f"Warning: refer with {argv[0]} id already exists")
+        return self
+
+
+
 
