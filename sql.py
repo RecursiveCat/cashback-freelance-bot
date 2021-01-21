@@ -162,7 +162,3 @@ class Sql:
         return self
 
 
-
-
-sql = Sql()
-sql.make_new_user(12345,"testargs",COMMON_USER).commit()

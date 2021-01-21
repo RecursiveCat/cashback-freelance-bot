@@ -60,7 +60,12 @@ Class Sql:
     var data_base_connection
     var data_base_cursor
     var last_query
-
+    OPERATOR_USER 
+    COMMON_USER 
+    REFER_USER 
+    OPERATIONS_SCHEME
+    USERS_SCHEME
+    REFERS_SCHEME 
     def __init__(self)
     def run(self,query)
     def select(self,data,table,condition=None)
@@ -91,8 +96,8 @@ sql.print_result()
 sql.select("*","users")
 sql.print_result()
 sql.get_user_type_by_id(1)
-sql.print_result()def get_referal_id_by_id(self,id)
-
+sql.print_result()
+def get_referal_id_by_id(self,id)
 sql.get_user_all_bonuses_by_id(1)
 sql.print_result()
 sql.get_user_percent_from_price_by_id(1)
@@ -152,8 +157,8 @@ Some bool (False in my case)
 Example 3
 ```
 sql = Sql()
-sql.make_new_user(63594,"some_referer","refer",7,7).commit()
-sql.make_new_user(17623,"some_customer","customer",6,2).commit()
+sql.make_new_user(63594,"some_referer",sql.REFER_USER).commit()
+sql.make_new_user(17623,"some_customer",sql.CUSTOMER_USER).commit()
 sql.make_new_referal(63594,17623).commit()
 ```
 This is makes referal link between refer and customers
