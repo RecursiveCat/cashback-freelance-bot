@@ -1,6 +1,10 @@
 import config
 import mysql.connector
 
+OPERATOR_USER = "operator"
+COMMON_USER = "customer"
+REFER_USER  = "refer"
+
 
 OPERATIONS_SCHEME = [
              "price_from_user_telegram_id",
@@ -111,15 +115,18 @@ class Sql:
         return self.bool_checker(self.data_base_cursor)
 
     def make_new_user(self,*argv):
-        if len(USERS_SCHEME)-1 != len(argv):
+        DEFAULT_ARGS = [
+          "id","all_bonuses","percent_from_price"
+        ]
+        if len(USERS_SCHEME)-len(DEFAULT_ARGS) != len(argv):
             print(f"Error: credentials ->{argv} are invalid,"+"""waiting {} getting {}""".format(
               len(USERS_SCHEME)-1,len(argv)
             ))
         elif not self.user_telegram_id_exists(argv[0]):
             query = """
             INSERT INTO users(telegram_id,name,type,all_bonuses,percent_from_price)
-              VALUES({},"{}","{}",{},{});
-            """.format(argv[0],argv[1],argv[2],argv[3],argv[4])
+              VALUES({},"{}","{}",0,0);
+            """.format(argv[0],argv[1],argv[2])
             sql.run(query)
         else:
             print(f"Warning: user with {argv[0]} id already exists")
@@ -157,3 +164,5 @@ class Sql:
 
 
 
+sql = Sql()
+sql.make_new_user(12345,"testargs",COMMON_USER).commit()
