@@ -161,4 +161,12 @@ class Sql:
             print(f"Warning: refer with {argv[0]} id already exists")
         return self
 
+    def get_all_referal_customers(self,referal_telegram_id):
+        self.select("*","refers",f"WHERE refer_telegram_id={referal_telegram_id}")
+        return self
+
+
+
+#sql = Sql()
+#sql.get_all_referal_customers(2147483647).print_result()
 
