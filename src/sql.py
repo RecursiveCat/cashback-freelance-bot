@@ -154,7 +154,6 @@ class Sql:
                   VALUES({},{});
                 """.format(argv[0],argv[1])
                 sql.run(query)
-                print("ref")
             else:
                 print("Warngin: You cannot make non-registered user a referal")
         else:
@@ -167,6 +166,6 @@ class Sql:
 
 
 
-#sql = Sql()
-#sql.get_all_referal_customers(2147483647).print_result()
+sql = Sql()
+sql.get_all_referal_customers(2147483647).print_result()
 
