@@ -168,11 +168,11 @@ class Sql:
 
 
 
-
+"""
 sql = Sql()
 sql.make_new_user(63594,"some_referer",REFER_USER).commit()
 sql.make_new_user(17623,"some_customer",COMMON_USER).commit()
 sql.make_new_referal(63594,17623).commit()
 sql.get_all_referal_customers(63594).print_result()
-
+"""
 
