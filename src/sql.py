@@ -16,6 +16,7 @@ OPERATIONS_SCHEME = [
              "price",
 ]
 
+
 USERS_SCHEME = [
              "id",
              "telegram_id",
@@ -24,6 +25,7 @@ USERS_SCHEME = [
              "all_bonuses",
              "percent_from_price",
 ]
+
 
 REFERS_SCHEME = [
              "id",
@@ -166,6 +168,11 @@ class Sql:
 
 
 
+
 sql = Sql()
-sql.get_all_referal_customers(2147483647).print_result()
+sql.make_new_user(63594,"some_referer",REFER_USER).commit()
+sql.make_new_user(17623,"some_customer",COMMON_USER).commit()
+sql.make_new_referal(63594,17623).commit()
+sql.get_all_referal_customers(63594).print_result()
+
 
