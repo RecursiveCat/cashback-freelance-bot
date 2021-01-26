@@ -4,9 +4,7 @@ import mysql.connector
 
 """
 TODO:
-From me:
-[1] Refresh tables
-[2] Refresh methods
+From 
 From cat:
 [1] Генерация id с проверкой
 [2] Метод для получения реферальных данных по id
