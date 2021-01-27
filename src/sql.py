@@ -4,9 +4,6 @@ import mysql.connector
 
 """
 TODO:
-From me:
-[1] Refresh tables
-[2] Refresh methods
 From cat:
 [1] Генерация id с проверкой
 [2] Метод для получения реферальных данных по id
@@ -141,16 +138,21 @@ class Sql:
     Возвращает: None 
     """
     def change_user_name(self,uid,name):
-        self.run(f"UPDATE users SET name = '{name}' WHERE id = {uid};")
-        self.commit()
+        try:
+            self.run(f"UPDATE users SET name = '{name}' WHERE id = {uid};")
+            self.commit()
+        except:
+            print("STACK: "+str(__class__)+" -> change_user_name")
 
     """
     Проверяет является ли передаваемый id - id админа
     """
     def is_admin(self,user_id):
-        sql.run(f"SELECT is_admin FROM users WHERE id = {user_id}")
-        return True == (int(list(sql.data_base_cursor)[0][0]))
-
+        try:
+            sql.run(f"SELECT is_admin FROM users WHERE id = {user_id}")
+            return True == (int(list(sql.data_base_cursor)[0][0]))
+        except:
+            print("STACK: "+str(__class__)+" -> is_admin")
 
     """
     Метод: make_institution
@@ -162,18 +164,98 @@ class Sql:
     Возвращает: None/True
     """
     def make_institution(self,institution_id,institution_name,admin_id):
-        if self.is_admin(admin_id):
-            self.run("""
-            INSERT INTO institutions(institution_id,institution_name,admin_id)
-            VALUES({},'{}',{});
-            """.format(
-                institution_id,
-                institution_name,
-                admin_id
+        try:
+            if self.is_admin(admin_id):
+                self.run("""
+                INSERT INTO institutions(institution_id,institution_name,admin_id)
+                VALUES({},'{}',{});
+                """.format(
+                    institution_id,
+                    institution_name,
+                    admin_id
+                ))
+                self.commit()
+                if self.id_exists_in_table("institution_id",institution_id,"institutions"):
+                    return True
+        except:
+            print("STACK: "+str(__class__)+" -> make_institution")
+
+    """
+    Метод: bonuses_to_user
+    Семантика: зачисляет/отчисляет бонусы пользователю по id
+    """
+    def bonuses_to_user(self,user_id,bonuses_count,inst_id,do):
+        try:
+            if self.id_exists_in_table("institution_id",inst_id,"institutions"):
+                if self.id_exists_in_table("id",user_id,"users"):
+                    if not self.id_exists_in_table("institution_id",inst_id,"bonuses"):
+                        self.run("""
+                        INSERT INTO bonuses(user_id,bonuses_count,institution_id)
+                        VALUES({},{},{});
+                        """.format(
+                            user_id,
+                            bonuses_count,
+                            inst_id
+                        ))
+                        self.commit()
+                    else :
+                        self.run(f"SELECT bonuses_count FROM bonuses WHERE user_id = {user_id};")
+                        all_bonuses_count = int(list(self.data_base_cursor)[0][0])
+                        if do == "+":
+                            all_bonuses_count = all_bonuses_count + bonuses_count
+                        else:
+                            all_bonuses_count = all_bonuses_count - bonuses_count
+                        self.run(f"UPDATE bonuses SET bonuses_count = {all_bonuses_count} WHERE user_id = {user_id}")
+                        self.commit()
+        except:
+            print("STACK: "+str(__class__)+" -> bonuses_to_user")
+
+
+    """
+    Метод: get_all_user_bonuses_from_inst_id
+    Семантика: возвращает все бонусы пользователя в текущей организации
+    """
+    def get_all_user_bonuses_from_inst_id(self,user_id,inst_id):
+        try:
+            self.run(f"SELECT bonuses_count FROM bonuses WHERE user_id={user_id} AND institution_id={inst_id}")
+            return int(list(self.data_base_cursor)[0][0])
+        except:
+            print("STACK: "+str(__class__)+" -> get_all_user_bonuses_from_inst_id")
+
+    """
+    Метод: gen_random_id
+    Генерирует уникальный 5ти значный id 
+    """
+    def gen_random_id(self):
+        cch = random.randint(10000,99999)
+        while self.id_exists_in_table("institution_id",cch,"institutions"):
+            cch = random.randint(10000,99999)
+        return cch
+
+    """
+    Метод:  get_all_bonuses_stuff
+    Возвращает словари с информацией о бонусах
+    """
+    def get_all_bonuses_stuff(self,user_id):
+        dump = []
+        def gen(user_bonuses,inst_name,inst_id):
+            return {
+                "user_bonuses": user_bonuses,
+                "inst_name": inst_name,
+                "inst_id": inst_id
+            }
+        all_users_with_id = list(self.run(f"SELECT * FROM bonuses WHERE user_id = {user_id}"))
+        for user in all_users_with_id:
+            inst_name = str(list(self.run(f"SELECT institution_name FROM institutions WHERE institution_id={int(user[2])}"))[0][0])
+            dump.append(gen(
+                int(user[1]),
+                str(inst_name),
+                int(user[2])
             ))
-            self.commit()
-            if self.id_exists_in_table("institution_id",institution_id,"institutions"):
-                return True
+        return dump
+
+
 
 sql = Sql()
-# sql.make_institution(77777,"OAO ZHABA",777777777)
+print(sql.get_all_user_bonuses_from_inst_id(777777777,77777))
+print(sql.get_all_bonuses_stuff(777777777))
