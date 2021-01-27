@@ -4,7 +4,9 @@ import mysql.connector
 
 """
 TODO:
-From 
+From me:
+[1] Refresh tables
+[2] Refresh methods
 From cat:
 [1] Генерация id с проверкой
 [2] Метод для получения реферальных данных по id
@@ -68,3 +70,6 @@ class Sql:
             return False
 
 
+
+
+    def create_customer(self,)

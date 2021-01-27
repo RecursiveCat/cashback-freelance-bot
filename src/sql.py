@@ -69,4 +69,58 @@ class Sql:
         else:
             return False
 
+    def create_user_as(self,user_id,name,user_type):
 
+        permission_config = {
+            "customer":'FALSE',
+            "operator":'FALSE',
+            "admin"   :'FALSE'
+            }
+
+        if user_type == "customer":
+            permission_config["customer"] = 'TRUE'
+        elif user_type == "operator":
+            permission_config["operator"] = 'TRUE'
+        elif user_type == "admin":
+            permission_config["admin"] = 'TRUE'
+
+
+        if not self.id_exists_in_table("id",user_id,"users"):
+            self.run("""
+            INSERT INTO users(id,name,is_customer,is_operator,is_admin)
+            VALUES({},'{}',{},{},{})
+            """.format(
+                    user_id,
+                    name,
+                    permission_config["customer"],
+                    permission_config["operator"],
+                    permission_config["admin"],
+                )
+            )
+            self.commit()
+            if self.id_exists_in_table("id",user_id,"users"):
+                return True
+
+    def change_permissions_by_uid(self,uid,permission_config):
+        sql.run("""
+        UPDATE users
+        SET is_customer = {},is_operator = {},is_admin = {}
+        WHERE id = {};
+        """.format(
+            permission_config["customer"],
+            permission_config["operator"],
+            permission_config["admin"],
+            uid
+        ))
+        self.commit()
+
+
+sql = Sql()
+sql.create_user_as(777777777,"zhaba","admin")
+sql.change_permissions_by_uid(777777777,
+    {
+        "customer":"FALSE",
+        "operator":"FALSE",
+        "admin":"TRUE"
+    }
+)
