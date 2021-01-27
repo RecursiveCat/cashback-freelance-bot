@@ -69,6 +69,15 @@ class Sql:
         else:
             return False
 
+    """
+    Метод: create_user_as
+    Семантика: создает пользователя
+    Принимает: текущий обьект(по умолчанию),
+               id пользователя,
+               name имя пользователя,
+               user_type тип пользователя
+    Возвращает: True если пользователь создан
+    """
     def create_user_as(self,user_id,name,user_type):
 
         permission_config = {
@@ -101,6 +110,15 @@ class Sql:
             if self.id_exists_in_table("id",user_id,"users"):
                 return True
 
+    """
+    Метод: change_permissions
+    Семантика: изменяет права пользователя
+    Принимает: текущий обьект(по умолчанию)
+               id пользователя
+               имя таблицы
+    Возвращает: True если существует
+                False если не существует
+    """
     def change_permissions_by_uid(self,uid,permission_config):
         sql.run("""
         UPDATE users
@@ -114,13 +132,48 @@ class Sql:
         ))
         self.commit()
 
+    """
+    Метод: change_user_name
+    Семантика: переписывает имя пользователя по его id
+    Принимает: текущий обьект(по умолчанию)
+               id пользователя
+               name текущее имя
+    Возвращает: None 
+    """
+    def change_user_name(self,uid,name):
+        self.run(f"UPDATE users SET name = '{name}' WHERE id = {uid};")
+        self.commit()
+
+    """
+    Проверяет является ли передаваемый id - id админа
+    """
+    def is_admin(self,user_id):
+        sql.run(f"SELECT is_admin FROM users WHERE id = {user_id}")
+        return True == (int(list(sql.data_base_cursor)[0][0]))
+
+
+    """
+    Метод: make_institution
+    Семантика: создает организацию и привязывает к ней админа
+    Принимает: self,
+               id предприятия
+               name предприятия
+               id админа (одного из)
+    Возвращает: None/True
+    """
+    def make_institution(self,institution_id,institution_name,admin_id):
+        if self.is_admin(admin_id):
+            self.run("""
+            INSERT INTO institutions(institution_id,institution_name,admin_id)
+            VALUES({},'{}',{});
+            """.format(
+                institution_id,
+                institution_name,
+                admin_id
+            ))
+            self.commit()
+            if self.id_exists_in_table("institution_id",institution_id,"institutions"):
+                return True
 
 sql = Sql()
-sql.create_user_as(777777777,"zhaba","admin")
-sql.change_permissions_by_uid(777777777,
-    {
-        "customer":"FALSE",
-        "operator":"FALSE",
-        "admin":"TRUE"
-    }
-)
+# sql.make_institution(77777,"OAO ZHABA",777777777)
