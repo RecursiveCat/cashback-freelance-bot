@@ -1,0 +1,80 @@
+import config
+import random
+import mysql.connector
+
+class Sql:
+
+    """
+    Метод: __init__
+    Семантика: Подключение к серверу на котором хостится Базы Даннох
+    """
+    def __init__(self):
+
+    def run(self,query):
+
+    def id_exists_in_table(self,id_name,id,table):
+
+    def create_user_as(self,user_id,name,user_type):
+
+    def change_permissions_by_uid(self,uid,permission_config):
+
+    def change_user_name(self,uid,name):
+
+    def get_user_name_by_id(self,user_id):
+
+    def is_admin(self,user_id):
+
+    def make_institution(self,institution_id,institution_name,admin_id):
+
+    def institution_exists(self,inst_id):
+
+    def user_exists(self,user_id):
+
+    def institution_already_in_node(self,inst_id):
+
+    def user_id_already_in_node(self,user_id):
+
+    def node_already_exist(self,inst_id,user_id): 
+
+
+    def data_is_valid_before_node_creation(self,user_id,inst_id):
+
+    def create_operation_node_by_adding_bonuses(self,user_id,bonuses_count,inst_id):
+
+    def change_user_bonuses(self,user_id,bonuses_count,inst_id):
+
+    def get_all_user_bonuses_from_inst_id(self,user_id,inst_id):
+
+    def gen_random_id(self):
+
+    def change_user_sale_percents(self,new_sale_percents,user_id,institution_id):
+
+    def get_user_sale_percents(self,user_id,institution_id):
+
+    def get_all_bonuses_stuff(self,user_id):
+        dump = []
+        def gen(user_bonuses,inst_name,inst_id):
+            return {
+                "user" : {
+                    "id": user_id,
+                    "name": self.get_user_name_by_id(user_id),
+                    "bonuses": user_bonuses,
+                },
+                "institution": {
+                    "name": inst_name,
+                    "id": inst_id
+                }
+            }
+        all_users_with_id = list(self.run(f"SELECT * FROM bonuses WHERE user_id = {user_id}"))
+        for user in all_users_with_id:
+            inst_name = str(list(self.run(f"SELECT institution_name FROM institutions WHERE institution_id={int(user[2])}"))[0][0])
+            dump.append(gen(
+                int(user[1]),
+                str(inst_name),
+                int(user[2])
+            ))
+        return dump
+
+
+
+
