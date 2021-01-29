@@ -2,23 +2,11 @@ import config
 import random
 import mysql.connector
 
-"""
-TODO:
-From cat:
-[1] Генерация id с проверкой
-[2] Метод для получения реферальных данных по id
-[3] Operations schema
-"""
-
-
 class Sql:
-
 
     """
     Метод: __init__
-    Семантика: Подключение к серверу Базы Даннох
-    Принимает: текущий обьект(по умолчанию)
-    Возвращает: None
+    Семантика: Подключение к серверу на котором хостится Базы Даннох
     """
     def __init__(self):
         self.data_base_connection = mysql.connector.connect(
@@ -32,9 +20,6 @@ class Sql:
     """
     Метод: run
     Семантика: запускает SQL запрос
-    Принимает: текущий обьект(по умолчанию)
-               SQL запрос 
-    Возвращает: обьект cursor
     """
     def run(self,query):
         self.data_base_cursor.execute(query)
@@ -42,9 +27,8 @@ class Sql:
         
     """
     Метод: commit
-    Семантика: сохраняет результат SQL запроса
-    Принимает: текущий обьект(по умолчанию)
-    Возвращает: None
+    Семантика: сохраняет изменения SQL запроса
+    в Базе Данных
     """
     def commit(self):
         self.data_base_connection.commit()
@@ -52,12 +36,6 @@ class Sql:
     """
     Метод: id_exists_in_table
     Семантика: проверяет, есть ли id в таблице
-    Принимает: текущий обьект(по умолчанию)
-               имя id
-               значение id
-               имя таблицы
-    Возвращает: True если существует
-                False если не существует
     """
     def id_exists_in_table(self,id_name,id,table):
         self.run(f"SELECT * FROM {table} WHERE {id_name}={id}")
@@ -69,11 +47,6 @@ class Sql:
     """
     Метод: create_user_as
     Семантика: создает пользователя
-    Принимает: текущий обьект(по умолчанию),
-               id пользователя,
-               name имя пользователя,
-               user_type тип пользователя
-    Возвращает: True если пользователь создан
     """
     def create_user_as(self,user_id,name,user_type):
 
@@ -85,8 +58,10 @@ class Sql:
 
         if user_type == "customer":
             permission_config["customer"] = 'TRUE'
+
         elif user_type == "operator":
             permission_config["operator"] = 'TRUE'
+        
         elif user_type == "admin":
             permission_config["admin"] = 'TRUE'
 
@@ -110,14 +85,9 @@ class Sql:
     """
     Метод: change_permissions
     Семантика: изменяет права пользователя
-    Принимает: текущий обьект(по умолчанию)
-               id пользователя
-               имя таблицы
-    Возвращает: True если существует
-                False если не существует
     """
     def change_permissions_by_uid(self,uid,permission_config):
-        sql.run("""
+        self.run("""
         UPDATE users
         SET is_customer = {},is_operator = {},is_admin = {}
         WHERE id = {};
@@ -132,39 +102,33 @@ class Sql:
     """
     Метод: change_user_name
     Семантика: переписывает имя пользователя по его id
-    Принимает: текущий обьект(по умолчанию)
-               id пользователя
-               name текущее имя
-    Возвращает: None 
     """
     def change_user_name(self,uid,name):
-        try:
-            self.run(f"UPDATE users SET name = '{name}' WHERE id = {uid};")
-            self.commit()
-        except:
-            print("STACK: "+str(__class__)+" -> change_user_name")
+        self.run(f"UPDATE users SET name = '{name}' WHERE id = {uid};")
+        self.commit()
+
+
+    """
+    Метод: get_user_name_by_id
+    Вовзращает имя юзера по айди
+    """
+    def get_user_name_by_id(self,user_id):
+        if self.id_exists_in_table("id",user_id,"users"):
+            res = list(self.run(f"SELECT name FROM users WHERE id = {user_id}"))
+            return str(res[0][0])
 
     """
     Проверяет является ли передаваемый id - id админа
     """
     def is_admin(self,user_id):
-        try:
-            sql.run(f"SELECT is_admin FROM users WHERE id = {user_id}")
-            return True == (int(list(sql.data_base_cursor)[0][0]))
-        except:
-            print("STACK: "+str(__class__)+" -> is_admin")
+        self.run(f"SELECT is_admin FROM users WHERE id = {user_id}")
+        return True == (int(list(self.data_base_cursor)[0][0]))
 
     """
     Метод: make_institution
     Семантика: создает организацию и привязывает к ней админа
-    Принимает: self,
-               id предприятия
-               name предприятия
-               id админа (одного из)
-    Возвращает: None/True
     """
     def make_institution(self,institution_id,institution_name,admin_id):
-        try:
             if self.is_admin(admin_id):
                 self.run("""
                 INSERT INTO institutions(institution_id,institution_name,admin_id)
@@ -177,39 +141,71 @@ class Sql:
                 self.commit()
                 if self.id_exists_in_table("institution_id",institution_id,"institutions"):
                     return True
-        except:
-            print("STACK: "+str(__class__)+" -> make_institution")
+
+
+    """
+    Проверяет существует ли организация по ее id
+    """
+    def institution_exists(self,inst_id):
+        return self.id_exists_in_table("institution_id",inst_id,"institutions")
+
+    """
+    Проверяет существует ли ли юзер по его id
+    """
+    def user_exists(self,user_id):
+        return self.id_exists_in_table("id",user_id,"users")
+
+    """
+    Проверяет существует ли связь (юзер + организация) по ее id
+    """
+    def institution_already_in_node(self,inst_id):
+        return self.id_exists_in_table("institution_id",inst_id,"bonuses")
+
+    """
+    Проверяет существует ли пользователь хоть в каких-то связях по id
+    """
+    def user_id_already_in_node(self,user_id):
+        return self.id_exists_in_table("user_id",user_id,"bonuses")
+
+    """
+    Проверяет существует ли связь по id юзера и организации
+    """
+    def node_already_exist(self,inst_id,user_id): 
+        return self.institution_already_in_node(inst_id) and self.user_id_already_in_node(user_id)
+
+    """
+    Проверяет существуют ли все необходимые данные перед созданием связи
+    """
+    def data_is_valid_before_node_creation(self,user_id,inst_id):
+        if  self.institution_exists(inst_id) and self.user_exists(user_id):
+            if not self.node_already_exist(inst_id,user_id):
+                return True
+            else: 
+                return False
+        else:
+            return False
 
     """
     Метод: bonuses_to_user
     Семантика: зачисляет/отчисляет бонусы пользователю по id
+    Использовать только при создании новой связи между заведением
+    и пользователем
     """
-    def bonuses_to_user(self,user_id,bonuses_count,inst_id,do):
-        try:
-            if self.id_exists_in_table("institution_id",inst_id,"institutions"):
-                if self.id_exists_in_table("id",user_id,"users"):
-                    if not self.id_exists_in_table("institution_id",inst_id,"bonuses"):
-                        self.run("""
-                        INSERT INTO bonuses(user_id,bonuses_count,institution_id)
-                        VALUES({},{},{});
-                        """.format(
-                            user_id,
-                            bonuses_count,
-                            inst_id
-                        ))
-                        self.commit()
-                    else :
-                        self.run(f"SELECT bonuses_count FROM bonuses WHERE user_id = {user_id};")
-                        all_bonuses_count = int(list(self.data_base_cursor)[0][0])
-                        if do == "+":
-                            all_bonuses_count = all_bonuses_count + bonuses_count
-                        else:
-                            all_bonuses_count = all_bonuses_count - bonuses_count
-                        self.run(f"UPDATE bonuses SET bonuses_count = {all_bonuses_count} WHERE user_id = {user_id}")
-                        self.commit()
-        except:
-            print("STACK: "+str(__class__)+" -> bonuses_to_user")
+    def create_operation_node_by_adding_bonuses(self,user_id,bonuses_count,inst_id):
+        if self.data_is_valid_before_node_creation(user_id,inst_id):
+            sql_query = """INSERT INTO bonuses(user_id,bonuses_count,institution_id) VALUES({},{},{});"""
+            self.run(sql_query.format(user_id,bonuses_count,inst_id))
+            self.commit()
 
+
+    """
+    Метод: bonuses_to_user
+    Использовать только если связь юзера и организации уже
+    создана с помощью метода create_operation_node
+    """
+    def change_user_bonuses(self,user_id,bonuses_count,inst_id):
+        self.run(f"UPDATE bonuses SET bonuses_count = {bonuses_count} WHERE user_id = {user_id} AND institution_id = {inst_id}")
+        self.commit()
 
     """
     Метод: get_all_user_bonuses_from_inst_id
@@ -233,6 +229,24 @@ class Sql:
         return cch
 
     """
+    Изменяет проценты скидкы пользователя для организации, чей id передан
+    """
+    def change_user_sale_percents(self,new_sale_percents,user_id,institution_id):
+        sql_query = """UPDATE bonuses SET sale_percents = {} WHERE user_id = {} AND institution_id = {}"""
+        self.run(sql_query.format(new_sale_percents,user_id,institution_id))
+        self.commit()
+
+    """
+    Возвращает проценты скидки пользователя в организации, чей id передан
+    """
+    def get_user_sale_percents(self,user_id,institution_id):
+        sql_query = f"SELECT sale_percents FROM bonuses WHERE user_id = {user_id} AND institution_id = {institution_id}"
+        query_result = self.run(sql_query)
+        readable_result = int(list(query_result)[0][0])
+        return readable_result
+
+
+    """
     Метод:  get_all_bonuses_stuff
     Возвращает словари с информацией о бонусах
     """
@@ -240,9 +254,15 @@ class Sql:
         dump = []
         def gen(user_bonuses,inst_name,inst_id):
             return {
-                "user_bonuses": user_bonuses,
-                "inst_name": inst_name,
-                "inst_id": inst_id
+                "user" : {
+                    "id": user_id,
+                    "name": self.get_user_name_by_id(user_id),
+                    "bonuses": user_bonuses,
+                },
+                "institution": {
+                    "name": inst_name,
+                    "id": inst_id
+                }
             }
         all_users_with_id = list(self.run(f"SELECT * FROM bonuses WHERE user_id = {user_id}"))
         for user in all_users_with_id:
@@ -256,6 +276,4 @@ class Sql:
 
 
 
-sql = Sql()
-print(sql.get_all_user_bonuses_from_inst_id(777777777,77777))
-print(sql.get_all_bonuses_stuff(777777777))
+
