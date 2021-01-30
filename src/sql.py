@@ -240,12 +240,34 @@ class Sql:
     Возвращает проценты скидки пользователя в организации, чей id передан
     """
     def get_user_sale_percents(self,user_id,institution_id):
-        sql_query = f"SELECT sale_percents FROM bonuses WHERE user_id = {user_id} AND institution_id = {institution_id}"
-        query_result = self.run(sql_query)
-        readable_result = int(list(query_result)[0][0])
-        return readable_result
+        if self.id_exists_in_table("id",user_id,"users"):
+            if self.id_exists_in_table("institution_id",institution_id,"institutions"):
+                sql_query = f"SELECT sale_percents FROM bonuses WHERE user_id = {user_id} AND institution_id = {institution_id}"
+                query_result = self.run(sql_query)
+                readable_result = int(list(query_result)[0][0])
+                return readable_result
 
-
+    """
+    Возвращает всю информацию о предприятии по его id
+    """
+    def get_institution_info_by_id(self,institution_id):
+        if self.id_exists_in_table("institution_id",institution_id,"institutions"):
+            sql_query = f"SELECT * FROM institutions WHERE institution_id={institution_id}"
+            institution_dump = list(self.run(sql_query))
+            institution_name = institution_dump[0][1]
+            admins = []
+            for institution in institution_dump:
+                admin_id = institution[2]
+                admin_name = self.get_user_name_by_id(admin_id)
+                admins.append({
+                    "admin_id":admin_id,
+                    "admin_name":admin_name,
+                })
+            return {
+                "institution_id":institution_id,
+                "institution_name":institution_name,
+                "all_admins":admins
+            }
     """
     Метод:  get_all_bonuses_stuff
     Возвращает словари с информацией о бонусах
@@ -277,3 +299,6 @@ class Sql:
 
 
 
+sql = Sql()
+res = sql.get_institution_info_by_id(88888)
+print(res)
