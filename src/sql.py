@@ -296,9 +296,18 @@ class Sql:
             ))
         return dump
 
-
+    def get_all_institutions_from_this_admin_id(self,admin_id):
+        if self.id_exists_in_table("id",admin_id,"users"):
+            sql_query = f"SELECT institution_id FROM institutions WHERE admin_id = {admin_id}"
+            result = list(self.run(sql_query))
+            return result
 
 
 sql = Sql()
-res = sql.get_institution_info_by_id(88888)
-print(res)
+
+# your request
+res = sql.get_all_institutions_from_this_admin_id(777777777)
+
+# try this for more info:
+for institution_id in res:
+    print(sql.get_institution_info_by_id(int(institution_id[0])))
