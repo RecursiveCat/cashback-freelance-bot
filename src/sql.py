@@ -87,16 +87,14 @@ class Sql:
     Семантика: изменяет права пользователя
     """
     def change_permissions_by_uid(self,uid,permission_config):
-        self.run("""
-        UPDATE users
-        SET is_customer = {},is_operator = {},is_admin = {}
-        WHERE id = {};
-        """.format(
-            permission_config["customer"],
-            permission_config["operator"],
-            permission_config["admin"],
-            uid
-        ))
+        sql_query = """UPDATE users SET is_customer = {},is_operator = {},is_admin = {} WHERE id = {};"""
+        self.run(sql_query.format(
+                permission_config["customer"],
+                permission_config["operator"],
+                permission_config["admin"],
+                uid
+            )
+        )
         self.commit()
 
     """
@@ -104,8 +102,9 @@ class Sql:
     Семантика: переписывает имя пользователя по его id
     """
     def change_user_name(self,uid,name):
-        self.run(f"UPDATE users SET name = '{name}' WHERE id = {uid};")
-        self.commit()
+        if self.id_exists_in_table("id",uid,"users"):
+            self.run(f"UPDATE users SET name = '{name}' WHERE id = {uid};")
+            self.commit()
 
 
     """
@@ -130,14 +129,13 @@ class Sql:
     """
     def make_institution(self,institution_id,institution_name,admin_id):
             if self.is_admin(admin_id):
-                self.run("""
-                INSERT INTO institutions(institution_id,institution_name,admin_id)
-                VALUES({},'{}',{});
-                """.format(
-                    institution_id,
-                    institution_name,
-                    admin_id
-                ))
+                sql_query = """INSERT INTO institutions(institution_id,institution_name,admin_id) VALUES({},'{}',{});"""
+                self.run(sql_query.format(
+                        institution_id,
+                        institution_name,
+                        admin_id
+                    )
+                )
                 self.commit()
                 if self.id_exists_in_table("institution_id",institution_id,"institutions"):
                     return True
@@ -268,6 +266,8 @@ class Sql:
                 "institution_name":institution_name,
                 "all_admins":admins
             }
+
+            
     """
     Метод:  get_all_bonuses_stuff
     Возвращает словари с информацией о бонусах
@@ -296,6 +296,10 @@ class Sql:
             ))
         return dump
 
+    """
+    Метод возвращает все предприятия которые администрирует 
+    конкретный админ, чей id передан в аргументе
+    """ 
     def get_all_institutions_from_this_admin_id(self,admin_id):
         if self.id_exists_in_table("id",admin_id,"users"):
             sql_query = f"SELECT institution_id FROM institutions WHERE admin_id = {admin_id}"
@@ -303,11 +307,3 @@ class Sql:
             return result
 
 
-sql = Sql()
-
-# your request
-res = sql.get_all_institutions_from_this_admin_id(777777777)
-
-# try this for more info:
-for institution_id in res:
-    print(sql.get_institution_info_by_id(int(institution_id[0])))
