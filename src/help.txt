@@ -1,28 +1,12 @@
-class Sql:
+1. добавления оператора в определенное предприятие
 
-    __init__(self)
-    run(self,query)
-    id_exists_in_table(self,id_name,id,table)
-    create_user_as(self,user_id,name,user_type)
-    change_permissions_by_uid(self,uid,permission_config)
-    change_user_name(self,uid,name)
-    get_user_name_by_id(self,user_id)
-    is_admin(self,user_id)
-    make_institution(self,institution_id,institution_name,admin_id)
-    institution_exists(self,inst_id)
-    user_exists(self,user_id)
-    institution_already_in_node(self,inst_id)
-    user_id_already_in_node(self,user_id)
-    node_already_exist(self,inst_id,user_id):
-    data_is_valid_before_node_creation(self,user_id,inst_id)
-    create_operation_node_by_adding_bonuses(self,user_id,bonuses_count,inst_id)
-    change_user_bonuses(self,user_id,bonuses_count,inst_id)
-    get_all_user_bonuses_from_inst_id(self,user_id,inst_id)
-    gen_random_id(self)
-    change_user_sale_percents(self,new_sale_percents,user_id,institution_id)
-    get_user_sale_percents(self,user_id,institution_id)
-    get_all_bonuses_stuff(self,user_id)
-
-
-
-
+2. добавление реферала к реферру
+3. метод получения КОЛИЧЕСТВА рефералов у реферра
+4. получить id предприятий, с которыми работал пользователь, покупал у них че нить
+5. добавить id предприятия в историю операций у пользователя (это нужно для того, чтобы посмотреть, у кого он что покупал, дабы сделать реферальную ссылку на них)
+6. добавить операцию в бд с намерением, например: код: 12321312, намерение: списать, юзер_айд:77777
+7. метод проверки наличия операции в бд по ее коду, возвращает тру или фолс, например (check_operation(77777) возвращает False
+8. получить предприятие, к которому привязан пользователь, если это оператор, то оператор какого предприятия он является, если предприниматель, то предпритиматель какого предприятия он является.
+9. Получить намерение (Списать или начислить) по коду операции, например: check_do(77777) возврващает + или -
+10. получить проценты для рефералов с какого либо предприятия, get_percents(7777) возвращает 30
+11. обновить процент скидки для предприятия, может быть как рефферов как и для рефералов, можно добавить в аргументы функции

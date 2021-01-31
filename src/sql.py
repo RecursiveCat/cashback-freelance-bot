@@ -307,3 +307,25 @@ class Sql:
             return result
 
 
+    def create_referal_node_user_to_user(self,user_id,referal_id):
+        if self.id_exists_in_table("id",user_id,"users"):
+             if self.id_exists_in_table("id",referal_id,"users"):
+                 sql_query = """INSERT INTO referals VALUES({},{});"""
+                 self.run(sql_query.format(user_id,referal_id))
+                 self.commit()
+                 
+    def get_all_referals_of_this_referal_id(self,referal_id):
+        all_refers = []
+        all_referals = list(sql.run("SELECT * FROM referals"))
+        for referal in all_referals:
+            refer_id = int(referal[1])
+            if refer_id == referal_id:
+                all_refers.append(int(referal[0]))
+        return all_refers
+
+sql = Sql()
+
+# Создать реферальную связь по айдишникам
+# sql.create_referal_node_user_to_user(999999999,777777777)
+# Получить всех рефералов одного реферала
+print(sql.get_all_referals_of_this_referal_id(777777777))
