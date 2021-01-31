@@ -87,16 +87,14 @@ class Sql:
     Семантика: изменяет права пользователя
     """
     def change_permissions_by_uid(self,uid,permission_config):
-        self.run("""
-        UPDATE users
-        SET is_customer = {},is_operator = {},is_admin = {}
-        WHERE id = {};
-        """.format(
-            permission_config["customer"],
-            permission_config["operator"],
-            permission_config["admin"],
-            uid
-        ))
+        sql_query = """UPDATE users SET is_customer = {},is_operator = {},is_admin = {} WHERE id = {};"""
+        self.run(sql_query.format(
+                permission_config["customer"],
+                permission_config["operator"],
+                permission_config["admin"],
+                uid
+            )
+        )
         self.commit()
 
     """
@@ -104,8 +102,9 @@ class Sql:
     Семантика: переписывает имя пользователя по его id
     """
     def change_user_name(self,uid,name):
-        self.run(f"UPDATE users SET name = '{name}' WHERE id = {uid};")
-        self.commit()
+        if self.id_exists_in_table("id",uid,"users"):
+            self.run(f"UPDATE users SET name = '{name}' WHERE id = {uid};")
+            self.commit()
 
 
     """
@@ -130,14 +129,13 @@ class Sql:
     """
     def make_institution(self,institution_id,institution_name,admin_id):
             if self.is_admin(admin_id):
-                self.run("""
-                INSERT INTO institutions(institution_id,institution_name,admin_id)
-                VALUES({},'{}',{});
-                """.format(
-                    institution_id,
-                    institution_name,
-                    admin_id
-                ))
+                sql_query = """INSERT INTO institutions(institution_id,institution_name,admin_id) VALUES({},'{}',{});"""
+                self.run(sql_query.format(
+                        institution_id,
+                        institution_name,
+                        admin_id
+                    )
+                )
                 self.commit()
                 if self.id_exists_in_table("institution_id",institution_id,"institutions"):
                     return True
@@ -268,6 +266,8 @@ class Sql:
                 "institution_name":institution_name,
                 "all_admins":admins
             }
+
+            
     """
     Метод:  get_all_bonuses_stuff
     Возвращает словари с информацией о бонусах
@@ -296,9 +296,36 @@ class Sql:
             ))
         return dump
 
+    """
+    Метод возвращает все предприятия которые администрирует 
+    конкретный админ, чей id передан в аргументе
+    """ 
+    def get_all_institutions_from_this_admin_id(self,admin_id):
+        if self.id_exists_in_table("id",admin_id,"users"):
+            sql_query = f"SELECT institution_id FROM institutions WHERE admin_id = {admin_id}"
+            result = list(self.run(sql_query))
+            return result
 
 
+    def create_referal_node_user_to_user(self,user_id,referal_id):
+        if self.id_exists_in_table("id",user_id,"users"):
+             if self.id_exists_in_table("id",referal_id,"users"):
+                 sql_query = """INSERT INTO referals VALUES({},{});"""
+                 self.run(sql_query.format(user_id,referal_id))
+                 self.commit()
+                 
+    def get_all_referals_of_this_referal_id(self,referal_id):
+        all_refers = []
+        all_referals = list(sql.run("SELECT * FROM referals"))
+        for referal in all_referals:
+            refer_id = int(referal[1])
+            if refer_id == referal_id:
+                all_refers.append(int(referal[0]))
+        return all_refers
 
 sql = Sql()
-res = sql.get_institution_info_by_id(88888)
-print(res)
+
+# Создать реферальную связь по айдишникам
+# sql.create_referal_node_user_to_user(999999999,777777777)
+# Получить всех рефералов одного реферала
+print(sql.get_all_referals_of_this_referal_id(777777777))
